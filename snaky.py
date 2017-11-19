@@ -172,8 +172,11 @@ def checkForKeyPress():
 
 # Show start screen
 def showStartScreen():
+    # Font setting
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
+    # title 1
     titleSurf1 = titleFont.render('Snaky!', True, WHITE, DARKGREEN)
+    # title 2
     titleSurf2 = titleFont.render('Snaky!', True, GREEN)
 
     degrees1 = 0
@@ -201,13 +204,13 @@ def showStartScreen():
         degrees1 += 3 # rotate by 3 degrees each frame
         degrees2 += 7 # rotate by 7 degrees each frame
 
-
+# Quit or Escape game
 def terminate():
     pygame.quit()
     sys.exit()
 
 
-
+# Make random location
 def getRandomLocation(worm):
     temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     while test_not_ok(temp, worm):
@@ -220,17 +223,23 @@ def test_not_ok(temp, worm):
             return True
     return False
 
+# Show if player gameover
 def showGameOverScreen():
+    # Font setting
     gameOverFont = pygame.font.Font('freesansbold.ttf', 150)
+    # if gameover, show 'Game'
     gameSurf = gameOverFont.render('Game', True, WHITE)
+    # if gameover, show 'Over'
     overSurf = gameOverFont.render('Over', True, WHITE)
     gameRect = gameSurf.get_rect()
     overRect = overSurf.get_rect()
+    # text location setting
     gameRect.midtop = (WINDOWWIDTH / 2, 10)
     overRect.midtop = (WINDOWWIDTH / 2, gameRect.height + 10 + 25)
 
     DISPLAYSURF.blit(gameSurf, gameRect)
     DISPLAYSURF.blit(overSurf, overRect)
+    # Show 'Press a key to play'
     drawPressKeyMsg()
     pygame.display.update()
     pygame.time.wait(500)
@@ -240,10 +249,11 @@ def showGameOverScreen():
         if checkForKeyPress():
             pygame.event.get() # clear event queue
             return
-
+# Show score during game
 def drawScore(score):
     scoreSurf = BASICFONT.render('Score: %s' % (score), True, WHITE)
     scoreRect = scoreSurf.get_rect()
+    # floating location
     scoreRect.topleft = (WINDOWWIDTH - 120, 10)
     DISPLAYSURF.blit(scoreSurf, scoreRect)
 
@@ -257,14 +267,14 @@ def drawWorm(wormCoords):
         wormInnerSegmentRect = pygame.Rect(x + 4, y + 4, CELLSIZE - 8, CELLSIZE - 8)
         pygame.draw.rect(DISPLAYSURF, GREEN, wormInnerSegmentRect)
 
-
+# Create Apple
 def drawApple(coord):
     x = coord['x'] * CELLSIZE
     y = coord['y'] * CELLSIZE
     appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, RED, appleRect)
 
-
+# Draw grid in game background
 def drawGrid():
     for x in range(0, WINDOWWIDTH, CELLSIZE): # draw vertical lines
         pygame.draw.line(DISPLAYSURF, DARKGRAY, (x, 0), (x, WINDOWHEIGHT))
