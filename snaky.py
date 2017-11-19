@@ -3,17 +3,18 @@
 import random, pygame, sys
 from pygame.locals import *
 
-FPS = 15
+FPS = 10
 ##WINDOWWIDTH = 640
 #WINDOWHEIGHT = 480
-WINDOWWIDTH = 640
-WINDOWHEIGHT = 480
+WINDOWWIDTH = 1040
+WINDOWHEIGHT = 840
 CELLSIZE = 40
 assert WINDOWWIDTH % CELLSIZE == 0, "Window width must be a multiple of cell size."
 assert WINDOWHEIGHT % CELLSIZE == 0, "Window height must be a multiple of cell size."
 CELLWIDTH = int(WINDOWWIDTH / CELLSIZE)
 CELLHEIGHT = int(WINDOWHEIGHT / CELLSIZE)
 
+# Color setting
 #             R    G    B
 WHITE     = (255, 255, 255)
 BLACK     = (  0,   0,   0)
@@ -23,6 +24,7 @@ DARKGREEN = (  0, 155,   0)
 DARKGRAY  = ( 40,  40,  40)
 BGCOLOR = BLACK
 
+# Control setting
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
@@ -33,18 +35,25 @@ HEAD = 0 # syntactic sugar: index of the worm's head
 def main():
     global FPSCLOCK, DISPLAYSURF, BASICFONT
 
+    # New game setting, Initialize
     pygame.init()
+    # Frame
     FPSCLOCK = pygame.time.Clock()
+    # Game display setting, Size
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
+    # Font setting
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
+    # Show 'Snaky'
     pygame.display.set_caption('Snaky')
 
+    # Show start screen
     showStartScreen()
+    # Run game and Show GameOver screen
     while True:
         runGame()
         showGameOverScreen()
 
-
+# Run game class
 def runGame():
     # Set a random start point.
     startx = random.randint(5, CELLWIDTH - 6)
@@ -52,6 +61,7 @@ def runGame():
     wormCoords = [{'x': startx,     'y': starty},
                   {'x': startx - 1, 'y': starty},
                   {'x': startx - 2, 'y': starty}]
+    # First direction is RIGHT
     direction = RIGHT
 
     # Start the apple in a random place.
@@ -60,8 +70,11 @@ def runGame():
     while True: # main game loop
         pre_direction = direction
         for event in pygame.event.get(): # event handling loop
+                # Quit game command
             if event.type == QUIT:
                 terminate()
+
+                # Control key
             elif event.type == KEYDOWN:
                 if (event.key == K_LEFT or event.key == K_a) and direction != RIGHT:
                     direction = LEFT
@@ -71,42 +84,53 @@ def runGame():
                     direction = UP
                 elif (event.key == K_DOWN or event.key == K_s) and direction != UP:
                     direction = DOWN
+
+                    # Quit game command
                 elif event.key == K_ESCAPE:
                     terminate()
-        # check if the worm has hit itself or the edge
+        # Check if the worm has hit itself or the edge
         if wormCoords[HEAD]['x'] == -1 or wormCoords[HEAD]['x'] == CELLWIDTH or wormCoords[HEAD]['y'] == -1 or wormCoords[HEAD]['y'] == CELLHEIGHT:
             return # game over
         for wormBody in wormCoords[1:]:
             if wormBody['x'] == wormCoords[HEAD]['x'] and wormBody['y'] == wormCoords[HEAD]['y']:
                 return # game over
 
-        # check if worm has eaten an apply
+        # Check if worm has eaten an apply
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
-            # don't remove worm's tail segment
-            apple = getRandomLocation(wormCoords) # set a new apple somewhere
+            # Don't remove worm's tail segment
+            apple = getRandomLocation(wormCoords) # Set a new apple somewhere
         else:
-            del wormCoords[-1] # remove worm's tail segment
+            del wormCoords[-1] # Remove worm's tail segment
 
-        # move the worm by adding a segment in the direction it is moving
+        # Move the worm by adding a segment in the direction it is moving
         if not examine_direction(direction, pre_direction):
             direction = pre_direction
+        # Move UP
         if direction == UP:
             newHead = {'x': wormCoords[HEAD]['x'], 'y': wormCoords[HEAD]['y'] - 1}
+        # Move DOWN
         elif direction == DOWN:
             newHead = {'x': wormCoords[HEAD]['x'], 'y': wormCoords[HEAD]['y'] + 1}
+        # Move LEFT
         elif direction == LEFT:
             newHead = {'x': wormCoords[HEAD]['x'] - 1, 'y': wormCoords[HEAD]['y']}
+        # Move RIGHT
         elif direction == RIGHT:
             newHead = {'x': wormCoords[HEAD]['x'] + 1, 'y': wormCoords[HEAD]['y']}
+
+        # Add new head
         wormCoords.insert(0, newHead)
         DISPLAYSURF.fill(BGCOLOR)
+        # Call drawGrid()
         drawGrid()
+        # Call drawWorm(wormCoords)
         drawWorm(wormCoords)
         drawApple(apple)
         drawScore(len(wormCoords) - 3)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
+# Can't move the One direction
 def examine_direction(temp , direction):
     if direction == UP:
         if temp == DOWN:
@@ -122,6 +146,7 @@ def examine_direction(temp , direction):
             return False
     return True
 
+# Waiting and key 'Press a key to play'
 def drawPressKeyMsg():
     pressKeySurf = BASICFONT.render('Press a key to play.', True, DARKGRAY)
     pressKeyRect = pressKeySurf.get_rect()
@@ -130,17 +155,22 @@ def drawPressKeyMsg():
 
 
 def checkForKeyPress():
+    
+    # Quit if Press quit key
     if len(pygame.event.get(QUIT)) > 0:
         terminate()
 
     keyUpEvents = pygame.event.get(KEYUP)
+
+    # Did not press any key
     if len(keyUpEvents) == 0:
         return None
+    # Quit if Press Escape key
     if keyUpEvents[0].key == K_ESCAPE:
         terminate()
     return keyUpEvents[0].key
 
-
+# Show start screen
 def showStartScreen():
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
     titleSurf1 = titleFont.render('Snaky!', True, WHITE, DARKGREEN)
@@ -160,6 +190,7 @@ def showStartScreen():
         rotatedRect2.center = (WINDOWWIDTH / 2, WINDOWHEIGHT / 2)
         DISPLAYSURF.blit(rotatedSurf2, rotatedRect2)
 
+        # Display 'Press a key to play'
         drawPressKeyMsg()
 
         if checkForKeyPress():
