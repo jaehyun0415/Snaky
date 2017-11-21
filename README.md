@@ -1,7 +1,7 @@
 # Snaky
 This project is MJ Team Project
 
-Snaky is a Snake game series including a basic one-player version and three versions of AI to play Snake automatically.
+Snaky is a Snake game including a basic one-player version.
 
 The project is implemented in Python.
 
