@@ -174,9 +174,9 @@ def checkForKeyPress():
 def showStartScreen():
     # Font setting
     titleFont = pygame.font.Font('freesansbold.ttf', 100)
-    # title 1
+    # Begining title 1 setting
     titleSurf1 = titleFont.render('Snaky!', True, WHITE, DARKGREEN)
-    # title 2
+    # Begining title 2 setting
     titleSurf2 = titleFont.render('Snaky!', True, GREEN)
 
     degrees1 = 0
@@ -206,9 +206,10 @@ def showStartScreen():
 
 # Quit or Escape game
 def terminate():
+    # To quit pygame
     pygame.quit()
+    # To exit system
     sys.exit()
-
 
 # Make random location
 def getRandomLocation(worm):
