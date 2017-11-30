@@ -22,7 +22,9 @@ RED       = (255,   0,   0)
 GREEN     = (  0, 255,   0)
 DARKGREEN = (  0, 155,   0)
 DARKGRAY  = ( 40,  40,  40)
+GOLD      = (153, 153,   0)
 BGCOLOR = BLACK
+
 
 # Control setting
 UP = 'up'
@@ -66,6 +68,7 @@ def runGame():
 
     # Start the apple in a random place.
     apple = getRandomLocation(wormCoords)
+    gold = getRandomLocation(wormCoords)
 
     while True: # main game loop
         pre_direction = direction
@@ -88,19 +91,23 @@ def runGame():
                     # Quit game command
                 elif event.key == K_ESCAPE:
                     terminate()
-        # Check if the worm has hit itself or the edge
+        # Check if the worm has hit the edge or itself
         if wormCoords[HEAD]['x'] == -1 or wormCoords[HEAD]['x'] == CELLWIDTH or wormCoords[HEAD]['y'] == -1 or wormCoords[HEAD]['y'] == CELLHEIGHT:
             return # game over
         for wormBody in wormCoords[1:]:
             if wormBody['x'] == wormCoords[HEAD]['x'] and wormBody['y'] == wormCoords[HEAD]['y']:
                 return # game over
 
-        # Check if worm has eaten an apply
+        # Check if worm has eaten an apple
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords) # Set a new apple somewhere
         else:
             del wormCoords[-1] # Remove worm's tail segment
+        # Check if worm has eaten an gold apple
+        if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
+            if random.randrange(1,100) % 12 == 0:
+                gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
 
         # Move the worm by adding a segment in the direction it is moving
         if not examine_direction(direction, pre_direction):
@@ -126,6 +133,7 @@ def runGame():
         # Call drawWorm(wormCoords)
         drawWorm(wormCoords)
         drawApple(apple)
+        drawGold(gold)
         drawScore(len(wormCoords) - 3)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -148,7 +156,7 @@ def examine_direction(temp , direction):
 
 # Waiting and key 'Press a key to play'
 def drawPressKeyMsg():
-    pressKeySurf = BASICFONT.render('Press a key to play.', True, DARKGRAY)
+    pressKeySurf = BASICFONT.render('Press a key to play.', True, DARKGREEN)
     pressKeyRect = pressKeySurf.get_rect()
     pressKeyRect.topleft = (WINDOWWIDTH - 200, WINDOWHEIGHT - 30)
     DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
@@ -274,6 +282,12 @@ def drawApple(coord):
     y = coord['y'] * CELLSIZE
     appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, RED, appleRect)
+
+def drawGold(coord1):
+    x = coord1['x'] * CELLSIZE
+    y = coord1['y'] * CELLSIZE
+    goldRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, GOLD, goldRect)
 
 # Draw grid in game background
 def drawGrid():
