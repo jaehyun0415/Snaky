@@ -102,12 +102,17 @@ def runGame():
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords) # Set a new apple somewhere
+        elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y']:
+            gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
         else:
             del wormCoords[-1] # Remove worm's tail segment
+        
         # Check if worm has eaten an gold apple
-        if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
-            if random.randrange(1,100) % 12 == 0:
-                gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
+        # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
+        #     if random.randrange(1,100) % 2 == 0:
+        #         gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
+        #     else:
+        #         del wormCoords[-1]   
 
         # Move the worm by adding a segment in the direction it is moving
         if not examine_direction(direction, pre_direction):
@@ -283,9 +288,9 @@ def drawApple(coord):
     appleRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, RED, appleRect)
 
-def drawGold(coord1):
-    x = coord1['x'] * CELLSIZE
-    y = coord1['y'] * CELLSIZE
+def drawGold(coord):
+    x = coord['x'] * CELLSIZE
+    y = coord['y'] * CELLSIZE
     goldRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, GOLD, goldRect)
 
