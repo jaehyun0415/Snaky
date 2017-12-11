@@ -69,7 +69,7 @@ def runGame():
     # Start the apple in a random place.
     apple = getRandomLocation(wormCoords)
     gold = getRandomLocation(wormCoords)
-
+    black = getRandomLocation(wormCoords)
     while True: # main game loop
         pre_direction = direction
         for event in pygame.event.get(): # event handling loop
@@ -102,10 +102,14 @@ def runGame():
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords) # Set a new apple somewhere
-        elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y']:
-            gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
+        elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
+            if random.randrange(1,100) % 5 == 0:
+                gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
         else:
             del wormCoords[-1] # Remove worm's tail segment
+
+        if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
+            return
         
         # Check if worm has eaten an gold apple
         # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
@@ -139,6 +143,7 @@ def runGame():
         drawWorm(wormCoords)
         drawApple(apple)
         drawGold(gold)
+        drawBlack(black)
         drawScore(len(wormCoords) - 3)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -293,6 +298,12 @@ def drawGold(coord):
     y = coord['y'] * CELLSIZE
     goldRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, GOLD, goldRect)
+
+def drawBlack(coord):
+    x = coord['x'] * CELLSIZE
+    y = coord['y'] * CELLSIZE
+    blackRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
+    pygame.draw.rect(DISPLAYSURF, DARKGRAY, blackRect)
 
 # Draw grid in game background
 def drawGrid():
