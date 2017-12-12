@@ -58,6 +58,7 @@ def main():
 
 # Run game class
 def runGame():
+    list = []
     # Set a random start point.
     startx = random.randint(5, CELLWIDTH - 6)
     starty = random.randint(5, CELLHEIGHT - 6)
@@ -103,9 +104,9 @@ def runGame():
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords) # Set a new apple somewhere
-            if random.randrange(1,100) % 5 == 0:
-                black = getRandomLocation(wormCoords)
-           
+            black = black_random(wormCoords)
+            list.append(black)
+
             # t = Timer(5.0, black_random(wormCoords))
             # t.start()
 
@@ -118,7 +119,7 @@ def runGame():
             del wormCoords[-1] # Remove worm's tail segment
 
         if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
-            return
+            return # game over
         
         # Check if worm has eaten an gold apple
         # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
@@ -153,6 +154,7 @@ def runGame():
         drawApple(apple)
         drawGold(gold)
         drawBlack(black)
+        drawList(list)
         drawScore(len(wormCoords) - 3)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
@@ -245,14 +247,17 @@ def getRandomLocation(worm):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
 
+def black_random(worm):
+    temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
+    while test_not_ok(temp, worm):
+        temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
+    return temp
+
 def test_not_ok(temp, worm):
     for body in worm:
         if temp['x'] == body['x'] and temp['y'] == body['y']:
             return True
     return False
-
-def black_random(worm):
-    black = getRandomLocation(worm)
 
 # Show if player gameover
 def showGameOverScreen():
@@ -316,6 +321,13 @@ def drawBlack(coord):
     y = coord['y'] * CELLSIZE
     blackRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
     pygame.draw.rect(DISPLAYSURF, GRAY, blackRect)
+
+def drawList(list):
+    temp = []
+    for temp in list:
+        x = temp['x'] * CELLSIZE
+        y = temp['y'] * CELLSIZE
+        drawBlack(temp)
 
 # Draw grid in game background
 def drawGrid():
