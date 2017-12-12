@@ -4,10 +4,10 @@ import random, pygame, sys
 from pygame.locals import *
 
 FPS = 10
-##WINDOWWIDTH = 640
-#WINDOWHEIGHT = 480
-WINDOWWIDTH = 1040
-WINDOWHEIGHT = 840
+WINDOWWIDTH = 640
+WINDOWHEIGHT = 480
+# WINDOWWIDTH = 1040
+# WINDOWHEIGHT = 840
 CELLSIZE = 40
 assert WINDOWWIDTH % CELLSIZE == 0, "Window width must be a multiple of cell size."
 assert WINDOWHEIGHT % CELLSIZE == 0, "Window height must be a multiple of cell size."
@@ -58,7 +58,8 @@ def main():
 
 # Run game class
 def runGame():
-    list = []
+    list = [] # initialize black apple location list
+    global score # initialize score
     score = 0
     # Set a random start point.
     startx = random.randint(5, CELLWIDTH - 6)
@@ -69,11 +70,19 @@ def runGame():
     # First direction is RIGHT
     direction = RIGHT
 
-    # Start the apple in a random place.
+    # Start apples in a random place.
+    # Create apple
     apple = getRandomLocation(wormCoords,list)
-    gold = getRandomLocation(wormCoords,list)
-    black = getRandomLocation(wormCoords,list)
+    
+    # Create black apple
+    black = black_random(wormCoords,list,apple)
+    # Add first black apple
     list.append(black)
+    
+    # Create gold apple
+    gold = getRandomLocation(wormCoords,list)
+    
+
     while True: # main game loop
         pre_direction = direction
         for event in pygame.event.get(): # event handling loop
@@ -106,7 +115,7 @@ def runGame():
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords,list) # Set a new apple somewhere
-            black = black_random(wormCoords,list)
+            black = black_random(wormCoords,list,apple)
             list.append(black)
             score += 1
 
@@ -116,7 +125,7 @@ def runGame():
         # Check if worm has eaten an gold apple (score +1, worm-len -1)
         if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             if random.randrange(1,100) % 2 == 0:
-                gold = getRandomLocation(wormCoords,list) # Set a new gold apple somewhere
+                gold = gold_random(wormCoords,list, apple) # Set a new gold apple somewhere
                 score += 1
                 if len(wormCoords) < 2:
                     return # gameover
@@ -247,19 +256,35 @@ def getRandomLocation(worm,list):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
 
-def black_random(worm,list):
+def black_random(worm,list,apple):
     temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
-    while test_not_ok(temp, worm, list):
+    while black_test_ok(temp, worm, list, apple):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
        
+def gold_random(worm,list,apple):
+    temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
+    while black_test_ok(temp, worm, list, apple):
+        temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
+    return temp
 
-def test_not_ok(temp, worm, list):
+def black_test_ok(temp, worm, list, apple):
+    if apple['x'] == temp['x'] and apple['y'] == temp['y']:
+        return True
     for body in worm:
         if temp['x'] == body['x'] and temp['y'] == body['y']:
             return True
     for apple in list:
         if temp['x'] == apple['x'] and temp['y'] == apple['y']:
+            return True
+    return False
+
+def test_not_ok(temp, worm, list):
+    for body in worm:
+        if temp['x'] == body['x'] and temp['y'] == body['y']:
+            return True
+    for dark in list:
+        if temp['x'] == dark['x'] and temp['y'] == dark['y']:
             return True
     return False
 
@@ -279,9 +304,16 @@ def showGameOverScreen():
     overSurf = gameOverFont.render('Over', True, WHITE)
     gameRect = gameSurf.get_rect()
     overRect = overSurf.get_rect()
+
+    scoreSurf = BASICFONT.render('Your Score: %s' % (score), True, WHITE)
+    scoreRect = scoreSurf.get_rect()
+
     # text location setting
     gameRect.midtop = (WINDOWWIDTH / 2, 10)
     overRect.midtop = (WINDOWWIDTH / 2, gameRect.height + 10 + 25)
+    # floating location
+    scoreRect.topleft = (WINDOWWIDTH / 2, gameRect.height + 10 + 25 + 25)
+    DISPLAYSURF.blit(scoreSurf, scoreRect)
 
     DISPLAYSURF.blit(gameSurf, gameRect)
     DISPLAYSURF.blit(overSurf, overRect)
