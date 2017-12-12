@@ -107,8 +107,6 @@ def runGame():
             black = black_random(wormCoords)
             list.append(black)
 
-            # t = Timer(5.0, black_random(wormCoords))
-            # t.start()
 
         elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             if random.randrange(1,100) % 5 == 0:
@@ -117,9 +115,14 @@ def runGame():
         else:
 
             del wormCoords[-1] # Remove worm's tail segment
-
-        if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
-            return # game over
+        
+        for temp in list:
+            if wormCoords[HEAD]['x'] == temp['x'] and wormCoords[HEAD]['y'] == temp['y']:
+                # print(temp)
+                return # gameover
+        
+        # if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
+        #     return # game over
         
         # Check if worm has eaten an gold apple
         # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
@@ -258,6 +261,12 @@ def test_not_ok(temp, worm):
         if temp['x'] == body['x'] and temp['y'] == body['y']:
             return True
     return False
+
+def black_test(list,worm):
+    for temp in list:
+        if worm[HEAD]['x'] == temp['x'] and worm[HEAD]['y'] == temp['y']:
+            # print(temp)
+            return # gameover
 
 # Show if player gameover
 def showGameOverScreen():
