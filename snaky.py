@@ -59,6 +59,7 @@ def main():
 # Run game class
 def runGame():
     list = []
+    score = 0
     # Set a random start point.
     startx = random.randint(5, CELLWIDTH - 6)
     starty = random.randint(5, CELLHEIGHT - 6)
@@ -72,6 +73,7 @@ def runGame():
     apple = getRandomLocation(wormCoords,list)
     gold = getRandomLocation(wormCoords,list)
     black = getRandomLocation(wormCoords,list)
+    list.append(black)
     while True: # main game loop
         pre_direction = direction
         for event in pygame.event.get(): # event handling loop
@@ -100,32 +102,31 @@ def runGame():
             if wormBody['x'] == wormCoords[HEAD]['x'] and wormBody['y'] == wormCoords[HEAD]['y']:
                 return # game over
 
-        # Check if worm has eaten an apple
+        # Check if worm has eaten an apple (score +1, worm-len +1)
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords,list) # Set a new apple somewhere
             black = black_random(wormCoords,list)
             list.append(black)
-
-
-        elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
-            if random.randrange(1,100) % 5 == 0:
-                gold = getRandomLocation(wormCoords,list) # Set a new gold apple somewhere
+            score += 1
 
         else:
-
             del wormCoords[-1] # Remove worm's tail segment
-        
+
+        # Check if worm has eaten an gold apple (score +1, worm-len -1)
+        if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
+            if random.randrange(1,100) % 2 == 0:
+                gold = getRandomLocation(wormCoords,list) # Set a new gold apple somewhere
+                score += 1
+                if len(wormCoords) < 2:
+                    return # gameover
+                del wormCoords[-1]
+
+        # Check if worm has eaten an black apple
         for temp in list:
             if wormCoords[HEAD]['x'] == temp['x'] and wormCoords[HEAD]['y'] == temp['y']:
                 return # gameover
-        
-        # Check if worm has eaten an gold apple
-        # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
-        #     if random.randrange(1,100) % 2 == 0:
-        #         gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
-        #     else:
-        #         del wormCoords[-1]   
+
 
         # Move the worm by adding a segment in the direction it is moving
         if not examine_direction(direction, pre_direction):
@@ -154,7 +155,7 @@ def runGame():
         drawGold(gold)
         drawBlack(black)
         drawList(list)
-        drawScore(len(wormCoords) - 3)
+        drawScore(score)
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
