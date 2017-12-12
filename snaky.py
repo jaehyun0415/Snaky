@@ -305,15 +305,10 @@ def showGameOverScreen():
     gameRect = gameSurf.get_rect()
     overRect = overSurf.get_rect()
 
-    scoreSurf = BASICFONT.render('Your Score: %s' % (score), True, WHITE)
-    scoreRect = scoreSurf.get_rect()
-
     # text location setting
     gameRect.midtop = (WINDOWWIDTH / 2, 10)
     overRect.midtop = (WINDOWWIDTH / 2, gameRect.height + 10 + 25)
     # floating location
-    scoreRect.topleft = (WINDOWWIDTH / 2, gameRect.height + 10 + 25 + 25)
-    DISPLAYSURF.blit(scoreSurf, scoreRect)
 
     DISPLAYSURF.blit(gameSurf, gameRect)
     DISPLAYSURF.blit(overSurf, overRect)
