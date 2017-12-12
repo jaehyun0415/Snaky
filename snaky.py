@@ -69,9 +69,9 @@ def runGame():
     direction = RIGHT
 
     # Start the apple in a random place.
-    apple = getRandomLocation(wormCoords)
-    gold = getRandomLocation(wormCoords)
-    black = getRandomLocation(wormCoords)
+    apple = getRandomLocation(wormCoords,list)
+    gold = getRandomLocation(wormCoords,list)
+    black = getRandomLocation(wormCoords,list)
     while True: # main game loop
         pre_direction = direction
         for event in pygame.event.get(): # event handling loop
@@ -103,14 +103,14 @@ def runGame():
         # Check if worm has eaten an apple
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
-            apple = getRandomLocation(wormCoords) # Set a new apple somewhere
-            black = black_random(wormCoords)
+            apple = getRandomLocation(wormCoords,list) # Set a new apple somewhere
+            black = black_random(wormCoords,list)
             list.append(black)
 
 
         elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             if random.randrange(1,100) % 5 == 0:
-                gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
+                gold = getRandomLocation(wormCoords,list) # Set a new gold apple somewhere
 
         else:
 
@@ -118,11 +118,7 @@ def runGame():
         
         for temp in list:
             if wormCoords[HEAD]['x'] == temp['x'] and wormCoords[HEAD]['y'] == temp['y']:
-                # print(temp)
                 return # gameover
-        
-        # if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
-        #     return # game over
         
         # Check if worm has eaten an gold apple
         # if wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
@@ -244,21 +240,25 @@ def terminate():
     sys.exit()
 
 # Make random location
-def getRandomLocation(worm):
+def getRandomLocation(worm,list):
     temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
-    while test_not_ok(temp, worm):
+    while test_not_ok(temp, worm, list):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
 
-def black_random(worm):
+def black_random(worm,list):
     temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
-    while test_not_ok(temp, worm):
+    while test_not_ok(temp, worm, list):
         temp = {'x': random.randint(0, CELLWIDTH - 1), 'y': random.randint(0, CELLHEIGHT - 1)}
     return temp
+       
 
-def test_not_ok(temp, worm):
+def test_not_ok(temp, worm, list):
     for body in worm:
         if temp['x'] == body['x'] and temp['y'] == body['y']:
+            return True
+    for apple in list:
+        if temp['x'] == apple['x'] and temp['y'] == apple['y']:
             return True
     return False
 
