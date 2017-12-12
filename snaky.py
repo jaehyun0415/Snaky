@@ -1,5 +1,5 @@
 
-
+from threading import Timer
 import random, pygame, sys
 from pygame.locals import *
 
@@ -23,6 +23,7 @@ GREEN     = (  0, 255,   0)
 DARKGREEN = (  0, 155,   0)
 DARKGRAY  = ( 40,  40,  40)
 GOLD      = (153, 153,   0)
+GRAY      = (128, 128, 128)
 BGCOLOR = BLACK
 
 
@@ -102,10 +103,18 @@ def runGame():
         if wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             # Don't remove worm's tail segment
             apple = getRandomLocation(wormCoords) # Set a new apple somewhere
+            if random.randrange(1,100) % 5 == 0:
+                black = getRandomLocation(wormCoords)
+           
+            # t = Timer(5.0, black_random(wormCoords))
+            # t.start()
+
         elif wormCoords[HEAD]['x'] == gold['x'] and wormCoords[HEAD]['y'] == gold['y'] or wormCoords[HEAD]['x'] == apple['x'] and wormCoords[HEAD]['y'] == apple['y']:
             if random.randrange(1,100) % 5 == 0:
                 gold = getRandomLocation(wormCoords) # Set a new gold apple somewhere
+
         else:
+
             del wormCoords[-1] # Remove worm's tail segment
 
         if wormCoords[HEAD]['x'] == black['x'] and wormCoords[HEAD]['y'] == black['y']:
@@ -242,6 +251,9 @@ def test_not_ok(temp, worm):
             return True
     return False
 
+def black_random(worm):
+    black = getRandomLocation(worm)
+
 # Show if player gameover
 def showGameOverScreen():
     # Font setting
@@ -303,7 +315,7 @@ def drawBlack(coord):
     x = coord['x'] * CELLSIZE
     y = coord['y'] * CELLSIZE
     blackRect = pygame.Rect(x, y, CELLSIZE, CELLSIZE)
-    pygame.draw.rect(DISPLAYSURF, DARKGRAY, blackRect)
+    pygame.draw.rect(DISPLAYSURF, GRAY, blackRect)
 
 # Draw grid in game background
 def drawGrid():
